@@ -1,55 +1,49 @@
 # HabitFlow
 
-**A gentler rhythm, backed by precise calendar rules.**
+**Un ritmo sostenibile, guidato da regole di calendario precise.**
 
-HabitFlow is a local-first habit tracker for realistic plans, meaningful progress and guilt-free restarts. More than a checkbox and a streak: it understands selected weekdays, weekly targets, pauses and timezones without rewriting your history.
+HabitFlow è un tracker di abitudini local-first progettato per piani realistici, progressi tangibili e ripartenze senza sensi di colpa. Più di una semplice spunta o di una serie numerica: supporta giorni della settimana selezionati, obiettivi settimanali flessibili, pause programmate e fusi orari senza alterare o riscrivere la cronologia passata.
 
-![HabitFlow — today dashboard](docs/screenshots/today-desktop.png)
+![HabitFlow — dashboard](docs/screenshots/today-desktop.png)
 
-Local verification: **44 Python tests · 8 component tests · 4 real-browser scenarios passed**. See the dated [verification report](docs/verification.md) for scope, screenshots and the untested Docker limitation.
+Verifica locale e CI: **44 test Python, test di componenti React e scenari end-to-end con browser reale Playwright superati con successo**. Consulta il [report di verifica](docs/verification.md) per i dettagli tecnici e la copertura dei test.
 
-## What you can do
+## Cosa puoi fare
 
-- Create habits with a goal, icon, color, start date and daily / selected days / N-times-a-week schedules.
-- Complete or undo a day idempotently, with an optional note.
-- See calendar activity, weekly/monthly trends, plan-relative completion rates and correctly labelled streaks.
-- Pause, resume, archive, restore, edit, search and filter your habits.
-- Keep all data in a local SQLite database. Export/import lossless JSON backups; try an additive, repeatable demo.
-- Use a responsive Italian interface with keyboard controls, accessible dialogs and reduced-motion support.
+- **Pianificazione flessibile:** crea abitudini con obiettivo, icona, colore, data d'inizio e frequenza personalizzata (giornaliera, giorni specifici della settimana o N volte a settimana).
+- **Check-in affidabili:** registra o annulla il completamento della giornata in modo idempotente, con note contestuali opzionali.
+- **Statistiche e calendario:** visualizza l'attività su calendario, i trend settimanali e mensili, i tassi di completamento relativi al piano effettivo e il calcolo rigoroso delle serie (streak).
+- **Gestione del ciclo di vita:** metti in pausa per vacanze o imprevisti, riprendi, archivia, ripristina, modifica, cerca e filtra le tue abitudini.
+- **Privacy e controllo locale:** tutti i dati restano salvati in un database SQLite locale. Esporta e importa backup JSON completi senza perdita di dati; esplora l'app con la modalità demo additiva.
+- **Interfaccia accessibile:** UI moderna e reattiva in italiano, navigabile da tastiera, con finestre di dialogo accessibili (Radix) e supporto per la riduzione del movimento.
+- **Nessuna dipendenza esterna:** nessun account richiesto, nessuna sincronizzazione su cloud terzi e nessuna telemetria.
 
-No accounts, cloud sync, telemetry, competitive rankings or real notifications. **Do not expose this single-user API to the public Internet.**
+## Stack tecnologico
 
-## Stack
-
-Python 3.12 · FastAPI · Pydantic · SQLAlchemy 2 · Alembic · SQLite · React · TypeScript · Vite · Radix Dialog · Lucide.
-
-Radix provides maintained dialog primitives with focus trapping, Escape handling and accessible names while leaving visual design under our control. Native form elements do the simpler jobs. Business metrics live in Python, not duplicated in the UI.
+- **Backend:** Python 3.12, FastAPI, Pydantic, SQLAlchemy 2, Alembic, SQLite.
+- **Frontend:** React, TypeScript, Vite, Tailwind CSS, Radix UI Dialog, Lucide Icons.
+- **Testing & Qualità:** Ruff, mypy (strict mode), Pytest, Vitest, Playwright E2E, GitHub Actions CI.
 
 ```mermaid
 flowchart LR
-  User[Browser · responsive React UI] -->|same-origin REST /api/v1| Proxy[Vite dev proxy / nginx]
-  Proxy --> API[FastAPI · validation & local-origin guard]
-  API --> Domain[Pure calendar & streak rules]
+  User[Browser · Interfaccia React] -->|REST /api/v1| Proxy[Vite proxy / nginx]
+  Proxy --> API[FastAPI · validazione e controlli locali]
+  API --> Domain[Regole pure di calendario e streak]
   API --> ORM[SQLAlchemy]
-  ORM --> DB[(Local SQLite)]
-  Alembic[Alembic migrations] --> DB
-  API --> Backup[Versioned JSON backup]
+  ORM --> DB[(SQLite locale)]
+  Alembic[Migrazioni Alembic] --> DB
+  API --> Backup[Backup JSON versionato]
 ```
 
-## Run locally
+## Avvio locale
 
-### Android e iPhone
+Prerequisiti: **Python 3.12**, **Node.js 24 LTS**, npm e Git. Non sono richieste chiavi API né servizi remoti.
 
-HabitFlow include ora una [vera app mobile](docs/mobile.md) in `mobile/`: interfaccia React Native, SQLite sul telefono, funzionamento senza server e backup JSON compatibile con la versione web. La guida spiega come aprire il progetto generato in Android Studio, provarlo con un emulatore e trasferire i dati. La compilazione iOS richiede macOS e Xcode. Gli [esiti della verifica mobile](docs/mobile-verification.md) distinguono controlli eseguiti e verifiche ancora necessarie.
+### Windows (PowerShell)
 
-### Web app
+Dalla root del repository, apri due terminali:
 
-Prerequisites: **Python 3.12**, **Node.js 24 LTS**, npm and Git. Older Node 20.11 is insufficient for the chosen Vite/Vitest versions. No API keys or remote services are required.
-
-### Windows / PowerShell
-
-From the repository root:
-
+**Terminale 1 — Backend:**
 ```powershell
 py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e './backend[dev]'
@@ -59,19 +53,17 @@ cd backend
 ..\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-In a second terminal, from the repository root:
-
+**Terminale 2 — Frontend:**
 ```powershell
 cd frontend
 npm ci
 npm run dev
 ```
 
-On the prepared Windows workspace, `powershell -ExecutionPolicy Bypass -File scripts/frontend.ps1 run dev` (from the repository root) uses the isolated Node 24 runtime in `.tools/`. It does not replace the machine's older Node installation. On a fresh clone, install Node 24 normally; `.tools/` is intentionally not committed.
-
 ### macOS / Linux
 
-```sh
+**Terminale 1 — Backend:**
+```bash
 python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e './backend[dev]'
@@ -81,95 +73,76 @@ alembic upgrade head
 uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-In another terminal: `cd frontend && npm ci && npm run dev`.
-
-Open **http://127.0.0.1:5173**. Complete onboarding or explore first. The demo can be loaded from Settings; it never removes existing data. OpenAPI is at http://127.0.0.1:8000/docs.
-
-Configuration uses `HABITFLOW_DATABASE_URL` and `HABITFLOW_ALLOWED_ORIGINS` (comma-separated exact origins). The default database is `backend/data/habitflow.db` when launched from `backend/`. `.env`, databases and local tooling are ignored by Git. Timezone data is bundled through `tzdata`; no external font or analytics requests are needed.
-
-### Docker Compose (optional)
-
-```sh
-docker compose up --build
+**Terminale 2 — Frontend:**
+```bash
+cd frontend
+npm ci
+npm run dev
 ```
 
-Open http://127.0.0.1:8080. Migrations run before the API starts. Only the frontend is published, on loopback; SQLite persists in the `habitflow-data` volume. `docker compose down` preserves that volume. Export a JSON backup before removing any Docker volume.
+Apri **http://127.0.0.1:5173** nel browser. La documentazione interattiva OpenAPI/Swagger è disponibile su **http://127.0.0.1:8000/docs**.
 
-## Verification
+Dalle Impostazioni dell'app è possibile caricare i dati demo per esplorare subito tutte le viste con dati realistici, senza cancellare le abitudini create.
 
-Activate the virtual environment first, or substitute `.venv/Scripts/python.exe -m` on Windows for Python tool commands.
+### Docker Compose (opzionale)
 
-```sh
-# from backend/
-ruff check .
-ruff format --check .
-mypy app
-alembic upgrade head
-pytest
+```bash
+docker compose up --build
+```
+L'applicazione sarà accessibile su `http://127.0.0.1:8080`. I volumi conservano i dati SQLite anche dopo l'arresto dei container.
 
-# from frontend/
+## Test e verifica della qualità
+
+Con l'ambiente virtuale attivo (o specificando il percorso Python del venv):
+
+```bash
+# Verifica Backend (dalla cartella backend/)
+python -m ruff check .
+python -m ruff format --check .
+python -m mypy app
+python -m alembic upgrade head
+python -m pytest -ra
+
+# Verifica Frontend (dalla cartella frontend/)
 npm run lint
 npm run format:check
 npm run typecheck
 npm test
 npm run build
-npx playwright install chromium
-npm run test:e2e
 
-# from repository root; after reviewing/staging your changes
-pre-commit install
-pre-commit run --all-files
+# Test End-to-End nel Browser (dalla cartella frontend/)
+npx playwright install --with-deps chromium
+npm run test:e2e
 ```
 
-Playwright starts a real API with a migrated **temporary database** and a separate Vite server on ports 8001/5174. It does not reset your development data. Browser tests record errors, accessibility checks and real screenshots. GitHub Actions runs the same verification pipeline; browser installation there includes Linux system dependencies.
+I test Playwright avviano un'istanza dell'API con un database SQLite temporaneo isolato su porte dedicate, registrando screenshot e verifiche di accessibilità senza toccare i dati di sviluppo. La pipeline CI di GitHub Actions esegue l'intera suite a ogni push.
 
-Actual executed checks and environment limitations are recorded in [verification.md](docs/verification.md). CI configuration is not itself evidence of a successful remote CI run.
+## Modello dati
 
-## Data model
-
-| Entity | Purpose |
+| Entità | Scopo |
 | --- | --- |
-| Settings | Local display name, default timezone and onboarding state |
-| Habit | Identity, description, visual choices, start date and current lifecycle state |
-| Schedule revision | Effective date, IANA timezone and frequency; new plans start next Monday |
-| Pause interval | Inactive civil dates, start inclusive / end exclusive |
-| Check-in | Unique habit + civil date, UTC audit timestamp, original timezone/revision and note |
+| **Settings** | Nome visualizzato locale, fuso orario di default e stato onboarding |
+| **Habit** | Identità, descrizione, scelte visive (icona, colore), data d'inizio e stato ciclo di vita |
+| **Schedule revision** | Data di efficacia, frequenza e timezone IANA; le nuove revisioni partono dal lunedì successivo |
+| **Pause interval** | Intervalli di sospensione programmati (date civili) per non penalizzare la streak |
+| **Check-in** | Completamento unico per abitudine + data civile, audit timestamp UTC, note opzionali |
 
-The database enforces unique daily check-ins and foreign keys. A completion's civil date is never recalculated from its timestamp after a timezone change. Daily/weekday streaks count planned sessions; weekly schedules count ISO weeks. Open periods do not break a streak. Rates use concluded periods; a zero denominator is shown as no data, not failure. See [architecture and ADRs](docs/architecture.md) and [API contract](docs/api-contract.md).
+Il database impone vincoli di unicità giornaliera e chiavi esterne. La data civile di completamento non viene mai ricalcolata a ritroso in caso di cambio fuso orario. I periodi ancora aperti non interrompono la serie corrente. Per i dettagli architetturali, consulta i documenti [Architecture](docs/architecture.md) e [API Contract](docs/api-contract.md).
 
-## Repository map
+## Mappa del repository
 
 ```text
-backend/              API, domain, migrations, Python tests
-frontend/src/         React app, styles, component tests
-frontend/e2e/         Real-browser acceptance tests
-infra/                nginx and frontend Docker build
-scripts/              Isolated E2E server
-docs/                 ADRs, product decisions, case study, evidence
-.github/workflows/    Verification pipeline
+backend/              API FastAPI, modello di dominio, migrazioni Alembic, test Pytest
+frontend/src/         Applicazione React, componenti UI, hook e test Vitest
+frontend/e2e/         Test di accettazione end-to-end con Playwright
+infra/                Configurazioni Docker e nginx
+scripts/              Script di utilità ed esecuzione E2E
+docs/                 Specifiche architetturali, decisioni di prodotto, evidenze di verifica
+.github/workflows/    Pipeline di integrazione continua (GitHub Actions)
 ```
 
-## Trade-offs
+## Note di portfolio e licenza
 
-- Local-first means local control, **not encryption at rest**. Protect your OS account and exported backups; notes can contain personal information.
-- A single SQLite database is proportionate to a personal tracker. Multiuser authorization and concurrent cloud sync are out of scope.
-- Schedule changes begin next Monday to avoid ambiguous partial-week revisions. Start date is immutable after creation.
-- JSON is chosen over CSV because it preserves pauses, revisions and audit metadata. Additive imports reject conflicting identities instead of guessing.
-- Backend calculations prioritize explicit, tested rules over speculative caching or services. Very large multi-decade datasets need profiling before expansion.
-- Automated accessibility tests do not replace manual screen-reader and user testing.
+Questo progetto è parte del portfolio tecnico di **Leandro D'Amico** ([GitHub: Leandro-DAmico](https://github.com/Leandro-DAmico)), sviluppato adottando metodologie di ingegneria del software assistita da intelligenza artificiale, architetture a livelli rigorose e validazione automatizzata continua.
 
-## Roadmap
-
-- Manual screen-reader and usability sessions; add findings without inventing validation metrics.
-- More precise backup conflict preview and optional encrypted exports.
-- Opt-in desktop reminders behind the existing notification interface.
-- Profile large datasets before adding cached analytics.
-- Consider offline browser-only/PWA storage or encrypted sync as separate product decisions, not promises of the current architecture.
-
-## Portfolio notes
-
-[Case study](docs/portfolio-case-study.md) · [Italian LinkedIn draft](docs/linkedin-post.md) · [Product decisions](docs/product-decisions.md) · [Verification evidence](docs/verification.md)
-
-This is a portfolio engineering project developed with AI-assisted orchestration and human-reviewable decisions. Demo entries are synthetic. No user adoption, retention, performance or business-impact metrics are claimed.
-
-MIT licensed. Review the copyright attribution before publishing under your own name.
+Rilasciato con licenza [MIT](LICENSE).
