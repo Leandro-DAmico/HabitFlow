@@ -50,7 +50,7 @@ known-first-party = ["app"]
 [tool.mypy]
 python_version = "3.12"
 strict = true
-plugins = []
+plugins = ["pydantic.mypy"]
 exclude = ["alembic"]
 
 [[tool.mypy.overrides]]
