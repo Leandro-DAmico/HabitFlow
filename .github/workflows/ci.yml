@@ -25,6 +25,7 @@ jobs:
           ruff check .
           ruff format --check .
           mypy app
+          mkdir -p data
           alembic upgrade head
           pytest
       - name: Frontend dependencies
