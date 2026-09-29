@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "HabitFlow",
+    "slug": "habitflow",
+    "scheme": "habitflow",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#F6F6F0",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "dev.habitflow.app"
+    },
+    "android": {
+      "package": "dev.habitflow.app",
+      "allowBackup": false,
+      "adaptiveIcon": {
+        "backgroundColor": "#315848",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      "expo-sharing",
+      "@react-native-community/datetimepicker"
+    ]
+  }
+}

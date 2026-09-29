@@ -1,0 +1,27 @@
+services:
+  backend:
+    build: ./backend
+    environment:
+      HABITFLOW_DATABASE_URL: sqlite:////app/data/habitflow.db
+      HABITFLOW_ALLOWED_ORIGINS: http://localhost:8080,http://127.0.0.1:8080
+    volumes:
+      - habitflow-data:/app/data
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    restart: unless-stopped
+  frontend:
+    build:
+      context: .
+      dockerfile: infra/frontend.Dockerfile
+    ports:
+      - '127.0.0.1:8080:8080'
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  habitflow-data:
